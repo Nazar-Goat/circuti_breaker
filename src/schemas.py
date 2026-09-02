@@ -17,12 +17,12 @@ class OutputServiceSchema(BaseModel):
     id: int = Field(default=..., description="Service ID")
     name: str = Field(default=..., max_length=200, description="Service name")
     state: CircuitBreakerState
-    service_ulr: str = Field(default=..., max_length=500, description="Service URL for health checks")
+    service_url: str = Field(default=..., max_length=500, description="Service URL for health checks")
     created_at: datetime = Field(default=datetime.now(), description="Service creation time")
 
 
 class HealthCheckResponse(BaseModel):
-    service_id: str
+    service_id: int
     healthy: bool
     state: CircuitBreakerState
     failures_count: int
@@ -32,5 +32,5 @@ class HealthCheckResponse(BaseModel):
 
 
 class TripResponse(BaseModel):
-    service_id: str
+    service_id: int
     state: CircuitBreakerState

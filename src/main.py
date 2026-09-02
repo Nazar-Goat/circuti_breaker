@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 
-from src.config import Settings
+from src.config import settings
 from src.router import api_router
 
 
@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):  # noqa
     yield
 
 app = FastAPI(
-        title=Settings.APP_NAME,
+        title=settings.APP_NAME,
         lifespan=lifespan,
         swagger_ui_parameters={
             "defaultModelsExpandDepth": -1,
@@ -30,5 +30,12 @@ app = FastAPI(
 
 app.include_router(api_router)
 
+
+@app.get("/healthz", tags=["infra"])
+async def healthz():
+    """Для Docker HEALTHCHECK / k8s liveness — не зависит от БД/Redis, просто 'процесс жив'."""
+    return {"status": "ok"}
+
+
 if __name__ == "__main__":
-    uvicorn.run("src.main:app", host="0.0.0.0", port=Settings.APP_PORT, reload=True)
+    uvicorn.run("src.main:app", host="0.0.0.0", port=settings.APP_PORT, reload=True)

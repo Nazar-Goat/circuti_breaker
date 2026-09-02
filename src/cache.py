@@ -11,7 +11,7 @@ class CacheService:
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
             db=settings.REDIS_DB,
-        )
+        )   
 
     async def get_cached_health(self, service_id: int) -> dict:
         raw_data = await self.__redis_cache_db.get(f"health:{service_id}")
@@ -23,3 +23,5 @@ class CacheService:
             json.dumps(result_data),
             ex=settings.HEALTH_CHECK_EXPIRATION,
         )
+
+cache_service = CacheService()

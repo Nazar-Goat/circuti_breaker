@@ -37,7 +37,7 @@ class BusinessService:
             id=service.id,
             name=service.name,
             state=service_breaker.state.value,
-            url=service.service_url,
+            service_url=service.service_url,
             created_at=service.created_at,
         )
 

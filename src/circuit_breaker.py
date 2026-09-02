@@ -20,7 +20,7 @@ class CircuitBreaker:
 
 
     def allow_request(self):
-        if self.state == CircuitBreakerState.CLOSED:
+        if self.state == CircuitBreakerState.CLOSED or self.state == CircuitBreakerState.HALF_OPEN:
             return True
 
         if self.state == CircuitBreakerState.OPEN:

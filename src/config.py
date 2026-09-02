@@ -19,9 +19,10 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str
     REDIS_PORT: str
-    REDIS_PASS: str
-    REDIS_AUTH_DB: str
-    REDIS_THROTTLING_DB: str
+    REDIS_PASSWORD: str
+    REDIS_DB: str
+
+    HEALTH_CHECK_EXPIRATION: int
 
 
     @property

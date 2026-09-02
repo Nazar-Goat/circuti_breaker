@@ -2,11 +2,14 @@ import time
 from datetime import datetime, timezone
 
 import httpx
+import structlog
 from fastapi import HTTPException
 
-from src.breakers_record import CircuitBreakerRecord
-from src.cache import CacheService
-from src.service_router import health_check
+from src.breakers_record import breaker_record, CircuitBreakerRecord
+from src.cache import cache_service, CacheService
+
+
+logger = structlog.get_logger()
 
 
 class HealthCheckService:
@@ -43,6 +46,7 @@ class HealthCheckService:
                 "cached": False
             }
 
+            logger.warning("circuit_open_fail_fast", service_id=service_id)
             return result
 
         start = time.monotonic()
@@ -53,7 +57,8 @@ class HealthCheckService:
                 response = await client.get(health_check_url)
                 healthy = response.status_code < 400
         except httpx.HTTPError as exc:
-            raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+            logger.error("health_check_failed", service_id=service_id, error=str(exc))
+            raise HTTPException(status_code=503, detail=f"Health check failed: {exc}") from exc
 
         latency_ms = (time.monotonic() - start) * 1000
 
@@ -73,7 +78,7 @@ class HealthCheckService:
         }
 
         await self._cache_service.set_cached_health(service_id, result)
-
+        logger.info("health_check_done", service_id=service_id, healthy=healthy, state=breaker.state.value)
         return result
 
-health_check_service = HealthCheckService()
+health_check_service = HealthCheckService(breaker_record=breaker_record, cache_service=cache_service)
