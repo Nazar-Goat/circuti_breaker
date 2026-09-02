@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     def DATABASE_URI(self):  # noqa
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
+    @property
+    def CELERY_BROKER_URL(self):  # noqa
+        auth = f":{self.REDIS_PASSWORD}@" if self.REDIS_PASSWORD else ""
+        return f"redis://{auth}{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
+
     model_config = SettingsConfigDict(env_file=find_dotenv())
 
 settings = Settings()
