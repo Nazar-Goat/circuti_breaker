@@ -42,4 +42,4 @@ jobs:
           REDIS_DB: 0
           HEALTH_CHECK_EXPIRATION: 10
         run: |
-          pytest tests/unit/ -v
+          pytest tests/test_circuit_breaker.py tests/test_health_check.py tests/test_cache.py tests/test_service_router_integration.py -v
